@@ -1,0 +1,32 @@
+Puck.magOn(1.25);
+NRF.nfcURL("http://questionablecontent.net");
+var val={x:0, y:0};
+var max={x:0, y:99999};
+var min={x:0, y:99999};
+var thing={x:0, y:0};
+declination=0;//take maxX as North
+
+Puck.on('mag', function(mag) {
+  for (var i in mag){
+    val[i]=Math.abs(mag[i]);
+    if (val[i]>max[i]) max[i]=val[i];
+    if (val[i]<min[i]) min[i]=val[i];
+ 
+   val[i]=2*(val[i]-((max[i]+min[i])/2))/(max[i]-min[i]);
+
+console.log("Heading",(val));}
+});
+on=true;
+
+setWatch(function() {
+on=!on;
+if (on){
+  Puck.magOn(1.25);
+  LED3.write(1);
+  console.log(Puck.getBatteryPercentage(), E.getTemperature());
+}
+else {Puck.magOff();
+      NRF.nfcURL();
+     console.log("Turning off");
+     digitalWrite([LED3,LED2,LED1], 0);}
+}, BTN, {edge:"rising", debounce:50, repeat:true});

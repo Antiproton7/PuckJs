@@ -1,0 +1,43 @@
+Puck.magOn(0.31);
+console.log("Manually Calibrate");
+
+var Max={x:-3498,y:3850};
+var Min={x:-3872,y:3495};
+var Spectrum={Off:[0,0,0], Red:[1,0,0],Yellow:[1,1,0], Green:[0,1,0],Turquoise:[0,1,1],Blue:[0,0,1], Purple:[1,0,1],White:[1,1,1]};
+
+
+
+function setColour(colr){
+  LED1.write(colr[0]);
+  LED2.write(colr[1]);
+  LED3.write(colr[2]);
+}
+
+Puck.on('mag', function(mag) {
+  Head=heading(normalize(mag));
+  console.log("Heading=",Head);
+if (Head<360&& Head>315||Head<45&&Head>0) setColour(Spectrum.Blue);
+  else if (Head<225&& Head>135) setColour(Spectrum.Red);
+  else if (Head<315&&Head>=225) setColour(Spectrum.Green);
+  else if (Head<=135&&Head>=45) setColour(Spectrum.Yellow);
+});
+
+function normalize(obj){
+  var Norm={x:0,y:0};
+  for (var i in obj){
+ if (i!="z"){
+     console.log(i,obj[i]);
+   Norm[i]=((obj[i]-((Max[i]+Min[i])/2))/(Max[i]-Min[i]));}}
+  //if(obj[i]>Max[i]) Max[i]=obj[i];
+  //else if (obj[i]<Min[i]) Min[i]=obj[i];}
+      return Norm;}
+
+function heading(obj){
+theta=0;
+  dir=0;
+theta=Math.atan(obj.y/obj.x) *(180/Math.PI);
+ // console.log(theta);
+if (obj.x<0) dir=(90-theta); 
+else dir=(270-theta);
+return dir;}
+

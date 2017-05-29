@@ -1,0 +1,54 @@
+var Spectrum={Off:[0,0,0], Red:[1,0,0],Yellow:[1,1,0], Green:[0,1,0],Turquoise:[0,1,1],Blue:[0,0,1], Purple:[1,0,1],White:[1,1,1]};
+var Rainbow=[];
+var Closest=0;
+var max=16300; //maximal capacitance
+function onInit(){Theremin(500);}
+
+function setColour(colr){
+  LED1.write(colr[0]);
+  LED2.write(colr[1]);
+  LED3.write(colr[2]);
+}
+
+function Theremin(rate){
+  for (var y in Spectrum){
+    if (Spectrum.hasOwnProperty(y)){
+    Rainbow.push(Spectrum[y]);
+    }}
+  Rainbow.splice(0,1); //build rainbow
+  
+  w=0;//colour state
+  capVal=0;
+  tol=200;//noise tolerance
+  console.log("Establishing nominal, do not touch!");
+  nominal=Puck.capSense(D11)+tol; //nominal capacitance,noise buffered
+  console.log("Nominal Established: ",nominal);
+   for (var i in Rainbow){
+    w++;
+    Rainbow[i][3]=((w*(max-nominal)/7)+nominal);}
+      console.log(Rainbow);
+  
+  setInterval(
+    function(){
+      capVal=Puck.capSense(D11);
+    if (max<capVal) max=capVal; //dynamic maximum
+      if (capVal>nominal){
+      curr=Rainbow[0][3];
+      Closest=Rainbow[0];
+    for (var i in Rainbow){
+      if (Math.abs(capVal-Rainbow[i][3])<Math.abs(capVal-curr)){
+          Closest=Rainbow[i];
+      curr=Rainbow[i][3];} 
+    }console.log(Closest, "capVal: ", capVal);
+      Blink(Closest,rate);}
+    },rate);}
+
+function Reset(){
+  nominal=Puck.capSense(D11)+200;
+  max=0;}
+
+function Blink(colr,period){
+setColour(colr);
+setTimeout(function(){setColour(Spectrum.Off);},period/2);
+}
+save();

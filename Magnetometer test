@@ -1,0 +1,18 @@
+Puck.magOn(0.63);
+var val={x:0, y:0, z:0};
+Puck.on('mag', function(mag) {
+  
+    for (var i in mag){
+      if (Math.abs(mag[i]-val[i])>15){
+      console.log("Delta ",i, (mag[i]-val[i]));
+    val[i]=mag[i];}
+    else{}}
+});
+on=true;
+Puck.on("btn", function(){
+on=!on;
+  console.log(on);
+if (on){Puck.magOn(0.63);
+       console.log(Puck.getBatteryPercentage());
+       }
+else Puck.magOff();});
